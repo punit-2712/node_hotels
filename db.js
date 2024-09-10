@@ -13,4 +13,5 @@ db.on("connected", () => {
   console.log("Connected to Mongodb");
 });
 
+//comment added
 module.exports = db;
