@@ -1,22 +1,38 @@
 const express = require("express");
 const app = express();
 const db = require("./db");
-require('dotenv').config();
+const passport=require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+
+
+require("dotenv").config();
 const bodyParser = require("body-parser");
 app.use(bodyParser.json()); //req.body mei ppura data laake deta hain vo
 
-app.get("/", function (req, res) {
+//MiddleWare Function
+
+const logRequest = (req, res, next) => {
+  console.log(
+    `[${new Date().toLocaleString()}] Request Made to : ${req.originalUrl}`
+  );
+  next(); // Move on to the next phase
+};
+
+//agar pure API mei karwana ho toh 
+app.use(logRequest);
+
+
+app.get("/", logRequest, function (req, res) {
   res.send("Hello World");
 });
-app.get("/chicken", function (req, res) {
+app.get("/chicken", logRequest, function (req, res) {
   res.send("Your Chicken Is ready");
 });
 
+const personRoutes = require("./routes/personRoutes");
 
-const personRoutes=require('./routes/personRoutes');
+app.use("/person", personRoutes);
 
-app.use('/person',personRoutes);
-
-const PORT=process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;
 
 app.listen(PORT);
