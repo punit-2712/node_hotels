@@ -1,9 +1,8 @@
 const express = require("express");
 const app = express();
 const db = require("./db");
-const passport=require('passport');
-const LocalStrategy = require('passport-local').Strategy;
 
+const passport = require("./auth");
 
 require("dotenv").config();
 const bodyParser = require("body-parser");
@@ -18,21 +17,25 @@ const logRequest = (req, res, next) => {
   next(); // Move on to the next phase
 };
 
-//agar pure API mei karwana ho toh 
+//agar pure API mei karwana ho toh
 app.use(logRequest);
 
+app.use(passport.initialize());
+const localAuthMiddleware = passport.authenticate("local", { session: false });
 
-app.get("/", logRequest, function (req, res) {
+app.get("/", localAuthMiddleware, function (req, res) {
   res.send("Hello World");
 });
 app.get("/chicken", logRequest, function (req, res) {
   res.send("Your Chicken Is ready");
 });
 
-const personRoutes = require("./routes/personRoutes");
 
+
+const personRoutes = require("./routes/personRoutes");
 app.use("/person", personRoutes);
 
-const PORT = process.env.PORT || 3000;
 
+
+const PORT = process.env.PORT || 3000;
 app.listen(PORT);
